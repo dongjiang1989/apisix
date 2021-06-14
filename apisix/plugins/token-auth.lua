@@ -9,7 +9,7 @@ local lrucache = core.lrucache.new({
 local schema = {
     type = "object",
     properties = {
-    	    header_name = {
+    	header_name = {
             type = "string",
             enum = {"X-Token"},
             default = "X-Token"
@@ -61,11 +61,9 @@ end
 function _M.rewrite(conf, ctx)
     local key = core.request.header(ctx, conf.header_name)
     if key then
-
         local pub = lrucache(conf.plugin_name, version,
             create_rsa_obj, conf)
-
-        encrypted, err = pub:decrypt(str)
+        encrypted, err = pub:decrypt(key)
         if not encrypted then
             return 401, {message = "Invalid x-token key in request"}
         end
