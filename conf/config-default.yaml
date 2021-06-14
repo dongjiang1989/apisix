@@ -266,6 +266,7 @@ plugins:                          # plugin list (sorted in alphabetical order)
   - serverless-pre-function
   # - skywalking
   - sls-logger
+  - token-auth
   - syslog
   - tcp-logger
   - udp-logger
