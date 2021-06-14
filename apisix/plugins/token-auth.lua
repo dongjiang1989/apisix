@@ -57,16 +57,15 @@ function _M.rewrite(conf, ctx)
     local key = core.request.header(ctx, conf.header_name)
     if key then
         local pub, _ = resty_rsa:new({
-    		public_key = conf.rsa_public_key,
-    		padding = resty_rsa.PADDING.RSA_PKCS1_PADDING,
-    		algorithm = conf.algorithm,
-	    })
-		if pub then
-			encrypted, err = pub:decrypt(key)
-        	if not encrypted then
-            	return 401, {message = "Invalid x-token key in request"}
-        	end
-		end
+            public_key = conf.rsa_public_key,
+            key_type = resty_rsa.KEY_TYPE.PKCS8,
+        })
+        if pub then
+            local _, err = pub:decrypt(key)
+            if err then
+                return 401, {message = "Invalid x-token key in request"}
+            end
+        end
     end 
     core.log.info("hit token-auth rewrite")
 end
