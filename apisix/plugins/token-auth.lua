@@ -2,20 +2,16 @@ local core     = require("apisix.core")
 local resty_rsa = require("resty.rsa")
 local plugin_name = "token-auth"
 
-local lrucache = core.lrucache.new({
-    type = "plugin",
-})
-
 local schema = {
     type = "object",
     properties = {
-    	header_name = {
+    	    header_name = {
             type = "string",
             enum = {"X-Token"},
             default = "X-Token"
         },
         rsa_public_key = {type = "string", minLength = 1, maxLength = 256},
-        algorithm = {
+        algorithm ={
             type = "string",
             enum = {"SHA256"},
             default = "SHA256"
@@ -41,7 +37,7 @@ local function create_rsa_obj(conf)
     		algorithm = conf.algorithm,
 	})
 	if err then
-    	    return nil
+    	return nil
 	end
 	return pub
 end
@@ -60,14 +56,20 @@ end
 function _M.rewrite(conf, ctx)
     local key = core.request.header(ctx, conf.header_name)
     if key then
-        local pub = lrucache(conf.plugin_name, version,
-            create_rsa_obj, conf)
-        encrypted, err = pub:decrypt(key)
-        if not encrypted then
-            return 401, {message = "Invalid x-token key in request"}
-        end
+        local pub, _ = resty_rsa:new({
+    		public_key = conf.rsa_public_key,
+    		padding = resty_rsa.PADDING.RSA_PKCS1_PADDING,
+    		algorithm = conf.algorithm,
+	    })
+		if pub then
+			encrypted, err = pub:decrypt(key)
+        	if not encrypted then
+            	return 401, {message = "Invalid x-token key in request"}
+        	end
+		end
     end 
     core.log.info("hit token-auth rewrite")
 end
 
 return _M
+
