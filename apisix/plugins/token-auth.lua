@@ -5,19 +5,14 @@ local plugin_name = "token-auth"
 local schema = {
     type = "object",
     properties = {
-    	    header_name = {
+    	header_name = {
             type = "string",
             enum = {"X-Token"},
             default = "X-Token"
         },
-        rsa_public_key = {type = "string", minLength = 1, maxLength = 256},
-        algorithm ={
-            type = "string",
-            enum = {"SHA256"},
-            default = "SHA256"
-        },
+        rsa_key = {type = "string", minLength = 1, maxLength = 2048},
     },
-    required = {"header_name", "rsa_public_key"},
+    required = {"header_name", "rsa_key"},
 }
 
 
@@ -31,15 +26,14 @@ local _M = {
 
 local function create_rsa_obj(conf)
     core.log.info("create new resty rsa plugin instance")
-    local pub, err = resty_rsa:new({
-    		public_key = conf.rsa_public_key,
-    		padding = resty_rsa.PADDING.RSA_PKCS1_PADDING,
-    		algorithm = conf.algorithm,
-	})
-	if err then
-    	return nil
-	end
-	return pub
+    local priv, err = resty_rsa:new({
+        private_key = conf.rsa_key,
+        key_type = resty_rsa.KEY_TYPE.PKCS1,
+    })
+    if err then
+        return nil
+    end
+    return pub
 end
 
 
@@ -56,14 +50,14 @@ end
 function _M.rewrite(conf, ctx)
     local key = core.request.header(ctx, conf.header_name)
     if key then
-        local pub, _ = resty_rsa:new({
-            public_key = conf.rsa_public_key,
-            key_type = resty_rsa.KEY_TYPE.PKCS8,
-        })
-        if pub then
-            local _, err = pub:decrypt(key)
+        local priv, _ = resty_rsa:new({
+            private_key = conf.rsa_key,
+            key_type = resty_rsa.KEY_TYPE.PKCS1,
+	})
+        if priv then
+            local _, err = priv:decrypt(key)
             if err then
-                return 401, {message = "Invalid x-token key in request"}
+                return 401, {errno = 401, errmsg = "Invalid x-token key in request"}
             end
         end
     end 
@@ -71,4 +65,3 @@ function _M.rewrite(conf, ctx)
 end
 
 return _M
-
