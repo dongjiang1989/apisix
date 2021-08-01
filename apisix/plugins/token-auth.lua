@@ -1,27 +1,19 @@
 local core     = require("apisix.core")
 local resty_rsa = require("resty.rsa")
 local plugin_name = "token-auth"
-
-local lrucache = core.lrucache.new({
-    type = "plugin",
-})
+local ngx = ngx
 
 local schema = {
     type = "object",
     properties = {
     	header_name = {
             type = "string",
-            enum = {"X-Token"},
+            enum = {"X-Token", "saasToken"},
             default = "X-Token"
         },
-        rsa_public_key = {type = "string", minLength = 1, maxLength = 256},
-        algorithm ={
-            type = "string",
-            enum = {"SHA256"},
-            default = "SHA256"
-        },
+        rsa_key = {type = "string", minLength = 1, maxLength = 2048},
     },
-    required = {"header_name", "rsa_public_key"},
+    required = {"header_name", "rsa_key"},
 }
 
 
@@ -35,14 +27,12 @@ local _M = {
 
 local function create_rsa_obj(conf)
     core.log.info("create new resty rsa plugin instance")
-    local pub, err = resty_rsa:new({
-    		public_key = conf.rsa_public_key,
-    		padding = resty_rsa.PADDING.RSA_PKCS1_PADDING,
-    		algorithm = conf.algorithm,
+    local priv, err = resty_rsa:new({
+    		private_key = conf.rsa_key,
+			key_type = resty_rsa.KEY_TYPE.PKCS1,
 	})
 	if err then
-    		ngx.say("new rsa err: ", err)
-    	    return nil
+    	return nil
 	end
 	return pub
 end
@@ -63,12 +53,21 @@ function _M.rewrite(conf, ctx)
     core.log.info("request token-auth :", key)
     local index = string.find(key,"C_")
     if key and index ~= 1 then
-        local pub = lrucache(conf.plugin_name, version,
-            create_rsa_obj, conf)
-        encrypted, err = pub:decrypt(key)
-        if not encrypted then
-            return 401, {message = "Invalid x-token key in request"}
-        end
+        local priv, _ = resty_rsa:new({
+    	    private_key = conf.rsa_key,
+	    padding = resty_rsa.PADDING.RSA_PKCS1_PADDING,
+	})
+	if priv then
+            local decode_b64 = ngx.decode_base64(key)
+            if decode_b64 then
+                local _, err = priv:decrypt(decode_b64)
+                if err then
+                    return 401, {errno = 401, errmsg = "Invalid x-token key in request"}
+                end
+            else
+                return 401, {errno = 401, errmsg = "Invalid x-token key in request"}
+        	end
+	end
     end 
     core.log.info("hit token-auth rewrite")
 end
