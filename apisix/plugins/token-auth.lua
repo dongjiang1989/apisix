@@ -51,21 +51,23 @@ end
 function _M.rewrite(conf, ctx)
     local key = core.request.header(ctx, conf.header_name)
     core.log.info("request token-auth :", key)
-    local index = string.find(key,"C_")
-    if key and index ~= 1 then
-        local priv, _ = resty_rsa:new({
-            private_key = conf.rsa_key,
-            padding = resty_rsa.PADDING.RSA_PKCS1_PADDING,
-        })
-        if priv then
-            local decode_b64 = ngx.decode_base64(key)
-            if decode_b64 then
-                local _, err = priv:decrypt(decode_b64)
-                if err then
+    if key then
+        local index = string.find(key,"C_")
+        if index ~= 1 then
+            local priv, _ = resty_rsa:new({
+                private_key = conf.rsa_key,
+                padding = resty_rsa.PADDING.RSA_PKCS1_PADDING,
+            })
+            if priv then
+                local decode_b64 = ngx.decode_base64(key)
+                if decode_b64 then
+                    local _, err = priv:decrypt(decode_b64)
+                    if err then
+                        return 401, {errno = 401, errmsg = "Invalid x-token key in request"}
+                    end
+                else
                     return 401, {errno = 401, errmsg = "Invalid x-token key in request"}
                 end
-            else
-                return 401, {errno = 401, errmsg = "Invalid x-token key in request"}
             end
         end
     end 
