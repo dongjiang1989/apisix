@@ -60,7 +60,9 @@ end
 
 function _M.rewrite(conf, ctx)
     local key = core.request.header(ctx, conf.header_name)
-    if key then
+    core.log.info("request token-auth :", key)
+    local index = string.find(key,"C_")
+    if key and index ~= 1 then
         local pub = lrucache(conf.plugin_name, version,
             create_rsa_obj, conf)
         encrypted, err = pub:decrypt(key)
