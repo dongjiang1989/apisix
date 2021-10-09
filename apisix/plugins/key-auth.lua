@@ -78,14 +78,14 @@ end
 
 
 function _M.rewrite(conf, ctx)
-    local key = core.request.header(ctx, "apikey")
+    local key = core.request.header(ctx, "Authorization")
     if not key then
-        return 401, {message = "Missing API key found in request"}
+        return 401, {errno = 401, errmsg = "Missing API key found in request"}
     end
 
     local consumer_conf = consumer_mod.plugin(plugin_name)
     if not consumer_conf then
-        return 401, {message = "Missing related consumer"}
+        return 401, {errno = 401, errmsg = "Missing related consumer"}
     end
 
     local consumers = lrucache("consumers_key", consumer_conf.conf_version,
@@ -93,7 +93,7 @@ function _M.rewrite(conf, ctx)
 
     local consumer = consumers[key]
     if not consumer then
-        return 401, {message = "Invalid API key in request"}
+        return 401, {errno = 401, errmsg = "Invalid API key in request"}
     end
     core.log.info("consumer: ", core.json.delay_encode(consumer))
 
