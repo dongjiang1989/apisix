@@ -146,12 +146,18 @@ function _M.log(conf, ctx)
     metrics.latency:observe(latency,
         gen_arr("request", service_id, consumer_name, balancer_ip))
 
+    if ctx.var.upstream_response_time then
+        local upstream_latency = ctx.var.upstream_response_time * 1000
+        metrics.overhead:observe(overhead,
+            gen_arr("upstream", service_id, consumer_name, balancer_ip))
+    end
+
     local overhead = latency
     if ctx.var.upstream_response_time then
         overhead =  overhead - ctx.var.upstream_response_time * 1000
     end
     metrics.overhead:observe(overhead,
-        gen_arr("request", service_id, consumer_name, balancer_ip))
+        gen_arr("apisix", service_id, consumer_name, balancer_ip))
 
     metrics.bandwidth:inc(vars.request_length,
         gen_arr("ingress", route_id, service_id, consumer_name, balancer_ip))
