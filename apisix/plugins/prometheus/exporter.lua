@@ -148,7 +148,7 @@ function _M.log(conf, ctx)
 
     if ctx.var.upstream_response_time then
         local upstream_latency = ctx.var.upstream_response_time * 1000
-        metrics.overhead:observe(overhead,
+        metrics.overhead:observe(upstream_latency,
             gen_arr("upstream", service_id, consumer_name, balancer_ip))
     end
 
