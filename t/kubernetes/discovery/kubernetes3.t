@@ -147,10 +147,10 @@ _EOC_
                     if op.op == "replace_endpointslices" then
                         method = "PATCH"
                         path = "/apis/discovery.k8s.io/namespaces/" .. op.namespace .. "/endpointslices/" .. op.name
-                        if #op.endpints == 0 then
+                        if #op.endpoints == 0 then
                             body = '[{"path":"/endpoints","op":"replace","value":[]}]'
                         else
-                            local t = { { op = "replace", path = "/endpoints", value = op.endpints } }
+                            local t = { { op = "replace", path = "/endpoints", value = op.endpoints } }
                             body = core.json.encode(t, true)
                         end
                         headers["Content-Type"] = "application/json-patch+json"
