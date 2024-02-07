@@ -34,6 +34,7 @@ discovery:
         port: "6443"
       client:
         token_file: "/tmp/var/run/secrets/kubernetes.io/serviceaccount/token"
+      watch_endpoint_slices: true
     - id: second
       service:
         schema: "http",
@@ -41,6 +42,7 @@ discovery:
         port: "6445"
       client:
         token_file: "/tmp/var/run/secrets/kubernetes.io/serviceaccount/token"
+      watch_endpoint_slices: true
 
 _EOC_
 
