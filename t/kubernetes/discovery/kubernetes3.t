@@ -344,7 +344,7 @@ GET /queries
 --- more_headers
 Content-type: application/json
 --- response_body eval
-qr{ 2 2 2 2 2 2 2 2 2 2 2 2 }
+qr{ 0 0 2 2 0 0 0 0 2 2 0 0 }
 
 
 
@@ -383,4 +383,4 @@ GET /queries
 --- more_headers
 Content-type: application/json
 --- response_body eval
-qr{ 2 2 2 2 2 2 2 2 2 2 2 2 }
+qr{ 0 0 2 2 0 0 0 0 2 2 0 0 }
