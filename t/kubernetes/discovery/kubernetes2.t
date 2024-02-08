@@ -770,21 +770,7 @@ $::scale_ns_c",
 
 
 === TEST 12: parse informer_factory information
---- yaml_config
-apisix:
-  node_listen: 1984
-deployment:
-  role: data_plane
-  role_data_plane:
-    config_provider: yaml
-discovery:
-  kubernetes:
-    service:
-      schema: "http",
-      host: "127.0.0.1",
-      port: "6445"
-    client:
-      token_file: "/tmp/var/run/secrets/kubernetes.io/serviceaccount/token"
+--- yaml_config eval: $::yaml_config
 --- request eval
 [
 
@@ -801,5 +787,5 @@ discovery:
 --- response_body eval
 [
     "{ 2 2 2 2 }\n",
-    "{ 2 2 2 2 }\n",
+    "{ 0 }\n",
 ]
