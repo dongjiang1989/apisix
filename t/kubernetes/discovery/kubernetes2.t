@@ -788,14 +788,14 @@ discovery:
 --- request eval
 [
 
-"GET /informer
-[]",
-
 "GET /queries
 [
   \"first/ns-a/ep:p1\",\"first/ns-a/ep:p2\",
   \"second/ns-a/ep:p1\",\"second/ns-a/ep:p2\"
-]"
+]",
+
+"GET /informer
+[]"
 
 ]
 --- response_body eval
