@@ -110,7 +110,7 @@ _EOC_
 
               local response_body = "{"
               local informer = informer_factory.new("", "v1", "Endpoints", "endpoints", namespace)
-              response_body=response_body.." "..informer
+              response_body=response_body.." "..#informer
               ngx.say(response_body.." }")
             }
         }
