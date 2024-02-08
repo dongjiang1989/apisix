@@ -106,7 +106,7 @@ _EOC_
               ngx.sleep(1)
 
               local response_body = "{"
-              local informer, err = informer_factory.new("", "v1", "Endpoints", "endpoints", "ns-a")
+              local informer, err = informer_factory.new("", "v1", "Endpoints", "endpoints", "default")
               if err or informer==nil or #informer==0 then
                 response_body=response_body.." "..0
               else
@@ -786,6 +786,6 @@ $::scale_ns_c",
 ]
 --- response_body eval
 [
-    "{ 2 2 2 2 }\n",
+    "{ 0 0 0 0 }\n",
     "{ 0 }\n",
 ]
