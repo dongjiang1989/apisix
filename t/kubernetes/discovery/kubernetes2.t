@@ -110,7 +110,7 @@ _EOC_
 
               local response_body = "{"
               local informer, err = informer_factory.new("", "v1", "Endpoints", "endpoints", namespace)
-              if informer==nil or #informer==0 then
+              if err or informer==nil or #informer==0 then
                 response_body=response_body.." "..0
               else
                 response_body=response_body.." "..#informer
@@ -773,30 +773,7 @@ $::scale_ns_c",
 
 
 === TEST 12: parse informer_factory information
---- yaml_config
-apisix:
-  node_listen: 1984
-deployment:
-  role: data_plane
-  role_data_plane:
-    config_provider: yaml
-discovery:
-  kubernetes:
-    - id: first
-      service:
-        host: ${KUBERNETES_SERVICE_HOST}
-        port: ${KUBERNETES_SERVICE_PORT}
-      client:
-        token_file: ${KUBERNETES_CLIENT_TOKEN_FILE}
-      namespace_selector:
-        equal: ns-a
-    - id: second
-      service:
-        schema: "http",
-        host: "127.0.0.1",
-        port: "6445"
-      client:
-        token: ${KUBERNETES_CLIENT_TOKEN}
+--- yaml_config eval: $::yaml_config
 --- request
 GET /informer?namespace=ns-a
 --- response_body eval
