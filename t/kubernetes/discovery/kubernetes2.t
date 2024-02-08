@@ -99,6 +99,21 @@ _EOC_
     $block->set_value("main_config", $main_config);
 
     my $config = $block->config // <<_EOC_;
+        location /informer {
+            content_by_lua_block {
+              local core = require("apisix.core")
+              local d = require("apisix.discovery.kubernetes")
+
+              ngx.sleep(1)
+              local namespace = ngx.var.arg_namespace()
+              core.log.info("get body ", namespace)
+
+              local response_body = "{"
+              local informer = d.informer_factory.new("", "v1", "Endpoints", "endpoints", namespace)
+              response_body=response_body.." "..informer
+              ngx.say(response_body.." }")
+            }
+        }
         location /queries {
             content_by_lua_block {
               local core = require("apisix.core")
@@ -749,3 +764,14 @@ $::scale_ns_c",
     "DONE\n",
     "{ 0 0 1 0 0 1 }\n",
 ]
+
+
+
+=== TEST 11: parse informer_factory information 
+--- yaml_config eval: $::yaml_config
+--- request
+GET /informer?namespace=ns-a
+--- response_body eval
+{
+    "{ 2 2 2 2 }\n",
+}
