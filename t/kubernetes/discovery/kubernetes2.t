@@ -107,10 +107,10 @@ _EOC_
 
               local response_body = "{"
               local informer, err = informer_factory.new("", "v1", "Endpoints", "endpoints", "default")
-              if err or informer==nil or #informer==0 then
+              if err or informer==nil then
                 response_body=response_body.." "..0
               else
-                response_body=response_body.." "..#informer
+                response_body=response_body.." "..informer
               end
               ngx.say(response_body.." }")
             }
