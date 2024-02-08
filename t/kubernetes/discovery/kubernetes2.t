@@ -785,11 +785,21 @@ discovery:
       port: "6445"
     client:
       token_file: "/tmp/var/run/secrets/kubernetes.io/serviceaccount/token"
---- request
-GET /informer
-{
-}
+--- request eval
+[
+
+"GET /informer
+[]",
+
+"GET /queries
+[
+  \"first/ns-a/ep:p1\",\"first/ns-a/ep:p2\",
+  \"second/ns-a/ep:p1\",\"second/ns-a/ep:p2\"
+]"
+
+]
 --- response_body eval
 {
+    "{ 2 2 2 2 }\n",
     "{ 2 2 2 2 }\n",
 }
