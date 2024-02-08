@@ -105,8 +105,8 @@ _EOC_
               local d = require("apisix.discovery.kubernetes")
 
               ngx.sleep(1)
-              local namespace = ngx.var.arg_namespace()
-              core.log.info("get body ", namespace)
+              local namespace = ngx.var.namespace
+              core.log.info("get param ", namespace)
 
               local response_body = "{"
               local informer = d.informer_factory.new("", "v1", "Endpoints", "endpoints", namespace)
@@ -767,7 +767,7 @@ $::scale_ns_c",
 
 
 
-=== TEST 11: parse informer_factory information 
+=== TEST 12: parse informer_factory information
 --- yaml_config eval: $::yaml_config
 --- request
 GET /informer?namespace=ns-a
