@@ -101,15 +101,12 @@ _EOC_
     my $config = $block->config // <<_EOC_;
         location /informer {
             content_by_lua_block {
-              local core = require("apisix.core")
               local informer_factory = require("apisix.discovery.kubernetes.informer_factory")
 
               ngx.sleep(1)
-              local namespace = ngx.var.namespace
-              core.log.info("get param ", namespace)
 
               local response_body = "{"
-              local informer, err = informer_factory.new("", "v1", "Endpoints", "endpoints", namespace)
+              local informer, err = informer_factory.new("", "v1", "Endpoints", "endpoints", "ns-a")
               if err or informer==nil or #informer==0 then
                 response_body=response_body.." "..0
               else
@@ -789,7 +786,7 @@ discovery:
     client:
       token_file: "/tmp/var/run/secrets/kubernetes.io/serviceaccount/token"
 --- request
-GET /informer?namespace=ns-a
+GET /informer
 --- response_body eval
 {
     "{ 2 2 2 2 }\n",
