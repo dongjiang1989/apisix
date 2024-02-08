@@ -782,13 +782,12 @@ deployment:
     config_provider: yaml
 discovery:
   kubernetes:
-    - id: informer_factory
-      service:
-        schema: "http",
-        host: "127.0.0.1",
-        port: "6445"
-      client:
-        token_file: "/tmp/var/run/secrets/kubernetes.io/serviceaccount/token"
+    service:
+      schema: "http",
+      host: "127.0.0.1",
+      port: "6445"
+    client:
+      token_file: "/tmp/var/run/secrets/kubernetes.io/serviceaccount/token"
 --- request
 GET /informer?namespace=ns-a
 --- response_body eval
