@@ -109,11 +109,16 @@ _EOC_
               core.log.info("get param ", namespace)
 
               local response_body = "{"
-              local informer = informer_factory.new("", "v1", "Endpoints", "endpoints", namespace)
-              response_body=response_body.." "..#informer
+              local informer, err = informer_factory.new("", "v1", "Endpoints", "endpoints", namespace)
+              if informer==nil or #informer==0 then
+                response_body=response_body.." "..0
+              else
+                response_body=response_body.." "..#informer
+              end
               ngx.say(response_body.." }")
             }
         }
+
         location /queries {
             content_by_lua_block {
               local core = require("apisix.core")
