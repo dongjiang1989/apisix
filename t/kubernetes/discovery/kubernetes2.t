@@ -787,6 +787,8 @@ discovery:
       token_file: "/tmp/var/run/secrets/kubernetes.io/serviceaccount/token"
 --- request
 GET /informer
+{
+}
 --- response_body eval
 {
     "{ 2 2 2 2 }\n",
