@@ -110,7 +110,7 @@ _EOC_
               if err or informer==nil then
                 response_body=response_body.." "..0
               else
-                response_body=response_body.." "..informer
+                response_body=response_body.." "..#informer
               end
               ngx.say(response_body.." }")
             }
