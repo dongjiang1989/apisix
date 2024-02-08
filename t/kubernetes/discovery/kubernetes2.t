@@ -102,14 +102,14 @@ _EOC_
         location /informer {
             content_by_lua_block {
               local core = require("apisix.core")
-              local d = require("apisix.discovery.kubernetes")
+              local informer_factory = require("apisix.discovery.kubernetes.informer_factory")
 
               ngx.sleep(1)
               local namespace = ngx.var.namespace
               core.log.info("get param ", namespace)
 
               local response_body = "{"
-              local informer = d.informer_factory.new("", "v1", "Endpoints", "endpoints", namespace)
+              local informer = informer_factory.new("", "v1", "Endpoints", "endpoints", namespace)
               response_body=response_body.." "..informer
               ngx.say(response_body.." }")
             }
